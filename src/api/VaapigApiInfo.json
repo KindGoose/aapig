@@ -1,0 +1,13 @@
+{
+  "file": {
+    "url": "writeFile",
+    "methods": ["get", "put", "post", "delete"],
+    "requiredParams": ["file"],
+    "putParam": "file",
+    "deleteParam": "file",
+    "headers": {
+      "Origin": "~project",
+      "Access-Control-Request-Methods": true
+    }
+  }
+}

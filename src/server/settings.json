@@ -1,0 +1,14 @@
+{
+  "info": {
+    "api": "api/infoForGenerate/AllApiInfo.ts",
+    "refbook": "refbooks/infoForGenerate/AllRefbookInfo.ts"
+  },
+  "server": {
+    "host": "localhost",
+    "port": "5480"
+  },
+  "project": {
+    "host": "",
+    "port": ""
+  }
+}
