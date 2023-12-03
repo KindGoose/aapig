@@ -85,7 +85,7 @@ fs.readFile('src/server/settings.json', (error, data) => {
             console.log('host:', host, '\nport:', port);
             if (host && typeof host === 'string' && port && typeof port === 'number') {
                 // projectAddress = "http://" + settings.project.host + ":" + settings.project.port;
-                projectAddress = "http://localhost:5173";
+                projectAddress = " http://localhost:5490";
                 getApiInfo().then((apiInfo) => {
                     allInfo.api = apiInfo;
                     getRefbookInfo().then((refbookInfo) => {
