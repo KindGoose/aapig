@@ -65,12 +65,12 @@ function getInfo(infoPath, name, info) {
     })
 }
 function getApiInfo() {
-    return getInfo('apig/apiInfo',
+    return getInfo('~apiInfo',
         {start: STARTAPIINFONAME}, 
         {start: STARTAPIINFO, end: ENDAPIINFO});
 }
 function getRefbookInfo() {
-    return getInfo('aapig/refbookInfo',
+    return getInfo('~refbookInfo',
         {start: STARTREFBOOKINFONAME},
         {start: STARTREFBOOKINFO, end: ENDREFBOOKINFO});
 }
