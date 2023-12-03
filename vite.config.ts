@@ -6,6 +6,9 @@ import {fileURLToPath, URL} from "url";
 export default defineConfig({
   plugins: [vue()],
   server: {
+    fs: {
+      allow: ['..'],
+    },
     port: 5490,
     host: true,
   },
