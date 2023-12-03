@@ -65,12 +65,12 @@ function getInfo(infoPath, name, info) {
     })
 }
 function getApiInfo() {
-    return getInfo('F:/Repositories/bms/web-mis-bms/aapig/apiInfo', 
+    return getInfo('apig/apiInfo',
         {start: STARTAPIINFONAME}, 
         {start: STARTAPIINFO, end: ENDAPIINFO});
 }
 function getRefbookInfo() {
-    return getInfo('F:/Repositories/bms/web-mis-bms/aapig/refbookInfo',
+    return getInfo('aapig/refbookInfo',
         {start: STARTREFBOOKINFONAME},
         {start: STARTREFBOOKINFO, end: ENDREFBOOKINFO});
 }
