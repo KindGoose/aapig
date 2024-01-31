@@ -85,9 +85,9 @@ export function generateRefbookFromList(refbookInfoList: RefbookInfoList): Refbo
             // console.log('String', refbookInfoList[name])
             resultRefbook[name] = generateRefbookFromString(<string>refbookInfoList[name], name);
             generationHistory.refbook +=
-            '  ' + name + ': {\n' +
-            '    name: "' + name + '",\n' +
-            '    url: "' + resultRefbook[name].url + '"\n  },\n';
+                '  ' + name + ': {\n' +
+                '    name: "' + name + '",\n' +
+                '    url: "' + resultRefbook[name].url + '"\n  },\n';
         } else if (typeof refbookInfoList[name] === 'object') {
             const obj: object = <object>refbookInfoList[name];
             if ('children' in obj) {
@@ -99,9 +99,9 @@ export function generateRefbookFromList(refbookInfoList: RefbookInfoList): Refbo
                     const refbookName: string = refbookGroupList[refbookIndex].name;
                     resultRefbook[refbookName] = refbookGroupList[refbookIndex];
                     generationHistory.refbook +=
-                    '  ' + refbookName + ': {\n' +
-                    '    name: "' + refbookName + '",\n' +
-                    '    url: "' + resultRefbook[refbookName].url + '",\n';
+                        '  ' + refbookName + ': {\n' +
+                        '    name: "' + refbookName + '",\n' +
+                        '    url: "' + resultRefbook[refbookName].url + '",\n';
                     let paramName: string;
                     const params: RefbookParams | undefined = resultRefbook[refbookName].params;
                     if (params) {
@@ -144,7 +144,11 @@ export function generateRefbookFromList(refbookInfoList: RefbookInfoList): Refbo
     let refbookIndex: string;
     for (refbookIndex in resultRefbook) {
         generationHistory.refbook += 'export const ' + refbookIndex + ' = (action) => {\n' +
-        '    exportRefbook.' + refbookIndex + '.then((data) => action(data));\n};\n';
+            '  return new Promise((resolve) => { \n'+
+            '    exportRefbook.' + refbookIndex + '.then((data) => {\n' +
+            '      action(data);\n' +
+            '      resolve(data);\n' +
+            '    })\n  })\n};\n';
     }
     return resultRefbook;
 }
