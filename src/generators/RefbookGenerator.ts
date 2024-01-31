@@ -79,7 +79,18 @@ function generateRefbookGroup(refbookGroup: RefbookGroup): Array<Refbook> {
 export function generateRefbookFromList(refbookInfoList: RefbookInfoList): RefbookList {
     let name: string;
     const resultRefbook: RefbookList = {};
-    generationHistory.refbook = 'const refbook = {\n';
+    generationHistory.refbook =
+        'function getRefbookPromise(refbook, action) {\n' +
+        '  return new Promise((resolve) => {\n' +
+        '    refbook.then((data) => {\n' +
+        '      if (action) {\n' +
+        '        action(data);\n' +
+        '        resolve(true);\n' +
+        '      } else resolve(data);\n' +
+        '    })\n' +
+        '  })\n' +
+        '}\n' +
+        'const refbook = {\n';
     for (name in refbookInfoList) {
         if (typeof refbookInfoList[name] === 'string') {
             // console.log('String', refbookInfoList[name])
@@ -143,12 +154,10 @@ export function generateRefbookFromList(refbookInfoList: RefbookInfoList): Refbo
     generationHistory.refbook += '}\nconst exportRefbook = new Proxy(refbook, RefbookProxyHandler);\n\n';
     let refbookIndex: string;
     for (refbookIndex in resultRefbook) {
-        generationHistory.refbook += 'export const ' + refbookIndex + ' = (action) => {\n' +
-            '  return new Promise((resolve) => { \n'+
-            '    exportRefbook.' + refbookIndex + '.then((data) => {\n' +
-            '      action(data);\n' +
-            '      resolve(data);\n' +
-            '    })\n  })\n};\n';
+        generationHistory.refbook +=
+            'export const ' + refbookIndex + ' = (action = null) => {\n' +
+            '  return getRefbookPromise(exportRefbook.' + refbookIndex + ', action);\n' +
+            '}\n'
     }
     return resultRefbook;
 }
