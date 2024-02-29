@@ -14,7 +14,7 @@
       <div class="generation_page-api_info-buttons">
         <button v-for="(info, index) in infoList" :key="index"
                 class="secondary-button"
-                @click="infobuttonClick(info)"
+                @click="infobuttonClick(info, index)"
                 :class="{active: currentInfoName === index}"
         >{{ index }}</button>
       </div>
@@ -55,13 +55,20 @@ import {
   getGeneratedRefbook,
   RefbookInfoList
 } from "..//generators/RefbookGenerator";
-import {getAllInfo} from '../assets/js/FileWorker';
-
+import {getAllInfo, writeApi} from '../assets/js/FileWorker';
+interface ApiInfoObject {
+  info: ApiInfoList,
+  path: string
+}
 interface ApiInfoForGeneration {
-  [key: string]: ApiInfoList;
+  [key: string]: ApiInfoObject;
+}
+interface RefbookInfoObject {
+  info: RefbookInfoList,
+  path: string
 }
 interface RefbookInfoForGeneration {
-  [key: string]: RefbookInfoList;
+  [key: string]: RefbookInfoObject;
 }
 interface allInfo {
   api: ApiInfoForGeneration;
@@ -105,6 +112,7 @@ const infobuttonsTitle = computed((): string => {
   }
 })
 getAllInfo().then((allInfoFileNames: allInfo) => {
+  console.log(allInfoFileNames);
   if (allInfoFileNames?.api) {
     allApiInfo.value = allInfoFileNames.api;
   }
@@ -113,14 +121,14 @@ getAllInfo().then((allInfoFileNames: allInfo) => {
   }
 })
 function setDefaultApiInfo() {
-  const aifg: ApiInfoForGeneration | undefined = allApiInfo.value['По умолчанию'];
+  const aifg: ApiInfoList | undefined = allApiInfo.value['По умолчанию'].info;
   if (aifg !== undefined)
-    getApiInfo(aifg);
+    getApiInfo(aifg, 'По умолчанию');
 }
 function setDefaultRefbookInfo() {
-  const rifg: RefbookInfoForGeneration | undefined = allRefbookInfo.value['По умолчанию'];
+  const rifg: RefbookInfoList | undefined = allRefbookInfo.value['По умолчанию'].info;
   if (rifg !== undefined)
-    getRefbookInfo(rifg);
+    getRefbookInfo(rifg, 'По умолчанию');
 }
 
 function changeMode(mode: number): void {
@@ -148,6 +156,16 @@ function generateApi(): void {
   sortedInfo.value = getSortedApiInfo();
   generateApiForList(apiInfo);
   generatedCode.value = getApiImport() + '\n\n' + getGeneratedMethods();
+  let path: string = '';
+  switch (generatorMode.value) {
+    case 1:
+      path = allApiInfo.value[currentInfoName.value].path;
+      break;
+    case 2:
+      path = allRefbookInfo.value[currentInfoName.value].path;
+      break;
+  }
+  writeApi(generatedCode.value, path)
 }
 
 function generateRefbook() {
@@ -156,14 +174,14 @@ function generateRefbook() {
   generatedCode.value = getRefbookImport() + '\n\n' + getGeneratedRefbook();
 }
 
-function getApiInfo(aifg: ApiInfoForGeneration, name: string): void {
+function getApiInfo(aifg: ApiInfoList, name: string): void {
   clearGeneratedMethods();
-  code.value = JSON.stringify(aifg);
+  code.value = JSON.stringify(aifg.info);
   currentInfoName.value = name;
 }
 
-function getRefbookInfo(rifg: RefbookInfoForGeneration, name: string): void {
-  code.value = JSON.stringify(rifg);
+function getRefbookInfo(rifg: RefbookInfoList, name: string): void {
+  code.value = JSON.stringify(rifg.info);
   currentInfoName.value = name;
 }
 </script>
