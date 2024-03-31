@@ -1,56 +1,8 @@
-interface ApiGenerationHistory {
-    api: string;
-    baseAddress: string;
-    sortedApiInfo: string;
-}
-
-interface Headers {
-    [index: string]: string;
-}
-
-interface ApiInfo {
-    url: string,
-    methods: Array<string>,
-    address?: string,
-    requiredParams?: Array<string>,
-    optionalParams?: Array<string>,
-    constParams?: Array<string>,
-    putParam?: string,
-    deleteParam?: string,
-    headers?: Headers
-}
-
-type ApiInfoField = 'url' | 'methods' | 'address' | 'requiredParams' | 'optionalParams' | 'constParams' |
-    'putParam' | 'deleteParam' | 'headers';
-type ApiInfoParamsFiild = 'requiredParams' | 'optionalParams' | 'constParams';
-type ApiInfoFieldValue = string | Array<string> | Headers | undefined;
-
-export interface ApiInfoList {
-    [index: string]: ApiInfo;
-}
-
-interface ApiMethod {
-    (...params: Array<string>): Promise<object>;
-}
-
-interface ApiElement {
-    [index: string]: ApiMethod;
-}
-
-interface ApiObject {
-    [index: string]: ApiElement;
-}
-
-interface FunctionGenerationInfo {
-    body: string;
-    params: Array<string>;
-}
-
 /**
  * История генерации включающая в себя историю сгенерированных методов.
- * @type {{methods: string, apiInfo: string}}
+ * @type {{baseAddress: string, api: string, sortedApiInfo: string}}
  */
-const generationHistory: ApiGenerationHistory = {
+const generationHistory = {
     api: '',
     baseAddress: '',
     sortedApiInfo: ''
@@ -58,35 +10,35 @@ const generationHistory: ApiGenerationHistory = {
 
 /**
  * Возвращает {@link generationHistory историю генерации}.
- * @returns {{methods: string, apiInfo: string}} история генерации
+ * @returns {string|string|*}
  */
-export function getGeneratedMethods(): string {
+export function getGeneratedMethods() {
     return generationHistory.api;
 }
 
-export function clearGeneratedMethods(): void {
+export function clearGeneratedMethods() {
     generationHistory.api = 'const api = {\n';
 }
 
-// export function getBaseAddress(): string {
+// export function getBaseAddress() {
 //     return generationHistory.baseAddress;
 // }
 
-// export function getImportAddress(): string {
+// export function getImportAddress() {
 //     return 'import { baseAddress } from "./index.js"'
 // }
 //
-// export function getImportValidate(): string {
+// export function getImportValidate() {
 //     return 'import { validateResponse } from "./index.js"';
 // }
 
-export function getSortedApiInfo(): string {
+export function getSortedApiInfo() {
     // return 'const get = "get";\nconst post = "post";\n' +
     //     'const put = "put";\nconst del = "delete";\n' + generationHistory.sortedApiInfo;
     return generationHistory.sortedApiInfo;
 }
 
-export function getImport(): string {
+export function getImport() {
     return 'import { baseAddress, validateResponse, getParams } from "@/api/index.ts"'
 }
 
@@ -94,7 +46,7 @@ export function getImport(): string {
 //  * Проверяет наличие "http(s)://" в составе входной строки.
 //  * @param url
 //  */
-// function checkAddress(url: string): boolean {
+// function checkAddress(url) {
 //     return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1;
 // }
 
@@ -102,27 +54,27 @@ export function getImport(): string {
 //  * Функция устанавливающая базовый адрес для генерируемых API.
 //  * @param address
 //  */
-// export function setBaseAddress(address: string): void {
+// export function setBaseAddress(address) {
 //     if (checkAddress(address)) {
 //         generationHistory.baseAddress = 'let baseAddress = "' + address + '";';
 //     } else throw new Error('Неверно задан базовый адрес!\n"' + address + '"');
 // }
 
-function checkOptionalInfoField(fieldName: ApiInfoField, apiInfo: ApiInfo): boolean {
+function checkOptionalInfoField(fieldName, apiInfo) {
     if (fieldName in apiInfo) {
-        let fieldValue: ApiInfoFieldValue = apiInfo[fieldName];
+        let fieldValue = apiInfo[fieldName];
         if (fieldValue) return Number(fieldValue.length) > 0;
         else return false;
     } else return true;
 
 }
 
-function checkInfoMethods(apiInfo: ApiInfo): boolean {
+function checkInfoMethods(apiInfo) {
     return apiInfo.methods.length > 0;
 }
 
-function checkApiInfo(apiName: string, apiInfo: ApiInfo): boolean {
-    let fieldName: ApiInfoField;
+function checkApiInfo(apiName, apiInfo) {
+    let fieldName;
     for (fieldName in apiInfo) {
         if (!checkOptionalInfoField(fieldName, apiInfo)) {
             throw new Error('Неверно заполнено поле "' + fieldName + '"\nу API "' + apiName + '"!');
@@ -138,7 +90,7 @@ function checkApiInfo(apiName: string, apiInfo: ApiInfo): boolean {
  * @param apiName Имя API
  * @param apiInfo описание API
  */
-function checkApiInfoAndBaseAddress(apiName: string, apiInfo: ApiInfo) {
+function checkApiInfoAndBaseAddress(apiName, apiInfo) {
     if (checkApiInfo(apiName, apiInfo) && ('address' in apiInfo) && !apiInfo.address)
         throw new Error('Не верно определён address у запрашиваемого API!')
 }
@@ -147,17 +99,17 @@ function checkApiInfoAndBaseAddress(apiName: string, apiInfo: ApiInfo) {
  * Формирует конечный URL для списка API.
  * @param apiInfoList список описаний API
  */
-function checkApiInfoList(apiInfoList: ApiInfoList): void {
-    let apiName: string;
+function checkApiInfoList(apiInfoList) {
+    let apiName;
     for (apiName in apiInfoList)
         checkApiInfoAndBaseAddress(apiName, apiInfoList[apiName]);
 }
 
-function sortAZ(a: string, b: string): number {
+function sortAZ(a, b) {
     return a > b ? 1 : -1;
 }
 
-const optionalFields: Array<ApiInfoField> = [
+const optionalFields = [
     'address',
     'requiredParams',
     'optionalParams',
@@ -166,15 +118,15 @@ const optionalFields: Array<ApiInfoField> = [
     'deleteParam'
 ]
 
-function sortApiInfoFields(apiInfo: ApiInfo): ApiInfo {
-    const result: ApiInfo = {
+function sortApiInfoFields(apiInfo) {
+    const result = {
         url: apiInfo.url,
         methods: apiInfo.methods.sort(sortAZ)
     };
-    let fieldName: ApiInfoField;
+    let fieldName;
     for (fieldName of optionalFields) {
         if (fieldName in apiInfo) {
-            let fieldValue: ApiInfoFieldValue = apiInfo[fieldName]
+            let fieldValue = apiInfo[fieldName]
             if (fieldValue) {
                 if (!result[fieldName]) {
                     // @ts-ignore
@@ -190,22 +142,22 @@ function sortApiInfoFields(apiInfo: ApiInfo): ApiInfo {
     return result;
 }
 
-export function sortApiInfo(apiInfoList: ApiInfoList): ApiInfoList {
+export function sortApiInfo(apiInfoList) {
     if (apiInfoList && Object.keys(apiInfoList)?.length) {
-        let sortedApiInfoNames: Array<string> = [];
-        let apiInfoName: string;
+        let sortedApiInfoNames = [];
+        let apiInfoName;
         for (apiInfoName in apiInfoList) {
             sortedApiInfoNames.push(apiInfoName);
         }
         sortedApiInfoNames = sortedApiInfoNames.sort(sortAZ);
-        const result: ApiInfoList = {};
-        const collectedApiUrl: Array<string> = [];
+        const result = {};
+        const collectedApiUrl = [];
         generationHistory.sortedApiInfo = 'const apiInfo = {\n';
         for (apiInfoName of sortedApiInfoNames) {
             generationHistory.sortedApiInfo += '  ' + apiInfoName + ': {\n';
             result[apiInfoName] = sortApiInfoFields(apiInfoList[apiInfoName]);
             generationHistory.sortedApiInfo += '  },\n';
-            if (collectedApiUrl.find((x: string): boolean => x === apiInfoList[apiInfoName].url))
+            if (collectedApiUrl.find((x) => x === apiInfoList[apiInfoName].url))
                 console.warn('Обнаружено избыточное использование url: "' + apiInfoList[apiInfoName].url + '"');
             collectedApiUrl.push(apiInfoList[apiInfoName].url)
         }
@@ -214,20 +166,20 @@ export function sortApiInfo(apiInfoList: ApiInfoList): ApiInfoList {
     } else return {};
 }
 
-function getRequiredParamsValidator(apiInfo: ApiInfo, func: FunctionGenerationInfo): void {
+function getRequiredParamsValidator(apiInfo, func) {
     if (apiInfo.requiredParams?.length) {
-        let param: string;
+        let param;
         for (param of apiInfo.requiredParams) {
             func.body += '      if (!' + param + ') new Error("Обязательный параметр \'' + param + '\' не определен!");\n'
         }
     }
 }
 
-function getStringParams(apiInfo: ApiInfo, paramsType: ApiInfoParamsFiild, first: boolean = true): string {
+function getStringParams(apiInfo, paramsType, first = true) {
     if (paramsType in apiInfo) {
-        let param: string;
-        let paramsString: string = '';
-        let paramsArray: Array<string> | undefined = apiInfo[paramsType];
+        let param;
+        let paramsString = '';
+        let paramsArray = apiInfo[paramsType];
         if (paramsArray) {
             for (param of paramsArray) {
                 paramsString += first ? '' : ',';
@@ -240,8 +192,8 @@ function getStringParams(apiInfo: ApiInfo, paramsType: ApiInfoParamsFiild, first
     } else return '';
 }
 
-function getStringRequiredAndOptionalParams(apiInfo: ApiInfo): string {
-    const requiredParams: string = getStringParams(apiInfo, 'requiredParams');
+function getStringRequiredAndOptionalParams(apiInfo) {
+    const requiredParams = getStringParams(apiInfo, 'requiredParams');
     return requiredParams + getStringParams(apiInfo, 'optionalParams', !requiredParams);
 }
 
@@ -250,10 +202,10 @@ function getStringRequiredAndOptionalParams(apiInfo: ApiInfo): string {
  * @param apiInfo описание API
  * @returns {string} строка с инициализацией постоянных параметров
  */
-function getStringConstantParams(apiInfo: ApiInfo): string {
+function getStringConstantParams(apiInfo) {
     if (apiInfo.constParams) {
-        let paramsString: string = '';
-        let param: string;
+        let paramsString = '';
+        let param;
         for (param of apiInfo.constParams) {
             paramsString += '      p.' + param + ';\n';
         }
@@ -265,7 +217,7 @@ function getStringConstantParams(apiInfo: ApiInfo): string {
  * @param apiInfo описание API
  * @param func объект содержащий все параметры функции и строковое представление его тела
  */
-function parseRequiredAndOptionalParams(apiInfo: ApiInfo, func: FunctionGenerationInfo): void {
+function parseRequiredAndOptionalParams(apiInfo, func) {
     if ('requiredParams' in apiInfo && apiInfo.requiredParams)
         func.params = func.params.concat(apiInfo.requiredParams);
     if ('optionalParams' in apiInfo && apiInfo.optionalParams)
@@ -281,14 +233,14 @@ function parseRequiredAndOptionalParams(apiInfo: ApiInfo, func: FunctionGenerati
  * @param apiInfo описание API
  * @param func объект содержащий все параметры функции и строковое представление его тела
  */
-function parseConstantParams(apiInfo: ApiInfo, func: FunctionGenerationInfo): void {
+function parseConstantParams(apiInfo, func) {
     if ('constParams' in apiInfo)
         func.body += getStringConstantParams(apiInfo);
 }
 
-function getHeadersString(apiInfo: ApiInfo): string {
+function getHeadersString(apiInfo) {
     let result = '{ ';
-    let headerName: string;
+    let headerName;
     if ('headers' in apiInfo && apiInfo.headers) {
         for (headerName in apiInfo.headers) {
             if (apiInfo.headers[headerName]) {
@@ -296,8 +248,8 @@ function getHeadersString(apiInfo: ApiInfo): string {
                 if (headerName === 'Origin' && apiInfo.headers[headerName][0] === '~')
                     result += apiInfo.headers[headerName].slice(1);
                 else if (headerName === 'Access-Control-Request-Methods') {
-                    let methodsString: string = '';
-                    let method: string;
+                    let methodsString = '';
+                    let method;
                     for (method of apiInfo.methods) {
                         methodsString += method + (methodsString ? ', ' : '"')
                     }
@@ -316,7 +268,7 @@ function getHeadersString(apiInfo: ApiInfo): string {
     return result;
 }
 
-function getHeaders(apiInfo: ApiInfo, method: string): string {
+function getHeaders(apiInfo, method) {
     if (method === 'post') {
         return ', { headers: ' + getHeadersString(apiInfo) + ' });';
     } else {
@@ -330,7 +282,7 @@ function getHeaders(apiInfo: ApiInfo, method: string): string {
  * @param func объект содержащий все параметры функции и строковое представление его тела
  * @param method один из методов "get", "post", "put", "delete"
  */
-function getStringAxiosCall(apiInfo: ApiInfo, func: FunctionGenerationInfo, method: string): void {
+function getStringAxiosCall(apiInfo, func, method) {
     func.body += '      let request = window.axios.' + method + '(';
     if ('address' in apiInfo) func.body += '"' + apiInfo.address + '"';
     else func.body += 'baseAddress';
@@ -367,7 +319,7 @@ function getStringAxiosCall(apiInfo: ApiInfo, func: FunctionGenerationInfo, meth
         }
     }
     func.body += '\n      return new Promise((resolve,reject) => validateResponse(request, resolve, reject));'
-    console.log(func.body);
+    // console.log(func.body);
 }
 
 /**
@@ -376,8 +328,8 @@ function getStringAxiosCall(apiInfo: ApiInfo, func: FunctionGenerationInfo, meth
  * @param method один из методов "get", "post", "put", "delete"
  * @returns {Function} функция вызывающая соответсвующий метод через axios
  */
-function generateMethod(apiInfo: ApiInfo, method: string): ApiMethod {
-    const func: FunctionGenerationInfo = {params: [], body: ''};
+function generateMethod(apiInfo, method) {
+    const func = {params: [], body: ''};
     if (method === 'get') {
         getRequiredParamsValidator(apiInfo, func);
         // Если формируемая функция get - заранее формируем объект параметров.
@@ -392,14 +344,14 @@ function generateMethod(apiInfo: ApiInfo, method: string): ApiMethod {
     // Генерация полученной функции.
 
     generationHistory.api += '    ' + method + '(';
-    let param: string;
+    let param;
     for (param of func.params) {
         generationHistory.api += param + ', ';
     }
     if (func.params.length)
         generationHistory.api = generationHistory.api.slice(0, -2);
     generationHistory.api += ') {\n' + func.body + '\n    },\n';
-    return <ApiMethod>new Function(...func.params, func.body);
+    return new Function(...func.params, func.body);
 }
 
 /**
@@ -407,9 +359,9 @@ function generateMethod(apiInfo: ApiInfo, method: string): ApiMethod {
  * @param apiInfo описание API
  * @returns {Object} объект API с соответствующими методами.
  */
-export function generateApi(apiInfo: ApiInfo): ApiElement {
-    const apiObject: ApiElement = {}; // Создание объекта API
-    let method: string;
+export function generateApi(apiInfo) {
+    const apiObject = {}; // Создание объекта API
+    let method;
     for (method of apiInfo.methods) {
         apiObject[method] = generateMethod(apiInfo, method);
     }
@@ -420,10 +372,10 @@ export function generateApi(apiInfo: ApiInfo): ApiElement {
  * Генерирует объекты API для заданного списка и формирует из них объект.
  * @param apiInfoList список описаний API
  */
-export function generateApiForList(apiInfoList: ApiInfoList): ApiObject {
+export function generateApiForList(apiInfoList) {
     checkApiInfoList(apiInfoList);
-    const api: ApiObject = {};
-    let apiName: string;
+    const api = {};
+    let apiName;
     for (apiName in apiInfoList) {
         generationHistory.api += '  ' + apiName + ': {\n';
         api[apiName] = generateApi(apiInfoList[apiName]);
@@ -439,7 +391,7 @@ export function generateApiForList(apiInfoList: ApiInfoList): ApiObject {
  * @param withCode определяет будет ли добавляться код описания API
  * @returns {string} строка документации с кодом описания API или без
  */
-// export function getDocumentation(apiParams: ApiInfo, withCode: boolean = true): string {
+// export function getDocumentation(apiParams, withCode = true) {
 //     let sortApi = [];
 //     for (let apiName in apiParams) {
 //         apiParams[apiName]['name'] = apiName;

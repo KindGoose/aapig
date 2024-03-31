@@ -2,7 +2,8 @@ import { AxiosInstance } from 'axios'
 import 'vite/client'
 declare global {
   interface Window {
-    axios: AxiosInstance
+    axios: AxiosInstance,
+    layerCount: number
   }
 }
 export {}

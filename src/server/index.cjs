@@ -12,6 +12,10 @@ let settings;
 let projectAddress;
 const allInfo = {};
 
+const libRoot = '../../';
+// const devRoot = 'src/test/';
+const root = libRoot;
+
 function requestListener(req, res) {
     switch (req.url) {
         case '/aapig/init':
@@ -41,8 +45,17 @@ function requestListener(req, res) {
 }
 
 function writeFile(fileString, path) {
-    fs.writeFile('../../' + path, fileString, (error) => {
-        if (error) console.error(error);
+    fs.writeFile(root + path, fileString, (error) => {
+        if (error) {
+            console.warn(error.message);
+            if (!fs.existsSync(root + path)) {
+                let newPath = root + path.slice(0,path.lastIndexOf('/'));
+                fs.mkdirSync(newPath, {recursive: true});
+                fs.writeFile(root + path, fileString, (error) => {
+                    if (error) console.error(error.message);
+                })
+            }
+        }
     })
 }
 
@@ -87,19 +100,20 @@ function getInfo(infoPath, name, info) {
     })
 }
 
+const apiInfoPath = root+'aapig/apiInfo';
 function getApiInfo() {
-    return getInfo('../../aapig/apiInfo',
+    return getInfo(apiInfoPath,
         {start: STARTAPIINFONAME},
         {start: STARTAPIINFO, end: ENDAPIINFO}).catch((error) => console.error(error));
 }
-
+const refbookInfoPath = root+'aapig/refbookInfo';
 function getRefbookInfo() {
-    return getInfo('../../aapig/refbookInfo',
+    return getInfo(refbookInfoPath,
         {start: STARTREFBOOKINFONAME},
         {start: STARTREFBOOKINFO, end: ENDREFBOOKINFO}).catch((error) => console.error(error));
 }
-
-fs.readFile('../../aapig/settings.json', (error, data) => {
+const settingsPath = root + 'aapig/settings.json';
+fs.readFile(settingsPath, (error, data) => {
     let serverHost, serverPort, interfaceHost, interfacePort;
     if (error) {
         if (error.code === 'ENOENT') {
