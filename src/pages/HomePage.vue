@@ -21,29 +21,29 @@
       <div v-else>
         Данные не обнаружены
       </div>
-<!--      <h5> Действия </h5>-->
-<!--      <div class="generation_page-api_info-buttons">-->
-<!--        <button class="secondary-button" @click="createAction()" disabled>Добавить (в разработке)</button>-->
-<!--        <button class="secondary-button" @click="infoListMode = (infoListMode + 1)%2">-->
-<!--          {{infoListMode === 0 ? 'Список' : 'Код'}}-->
-<!--        </button>-->
-<!--      </div>-->
-<!--      <div v-if="infoListMode === 0">-->
-<!--        <label>Код для генерации</label>-->
-<!--        <textarea style="width: 90vw; max-width: 90vw" v-model="code" @input="currentInfoName = ''"/>-->
-<!--      </div>-->
-<!--      <div v-else-if="infoListMode === 1">-->
-<!--        <TheTable :data="infoArray" :columns="[-->
-<!--            {-->
-<!--              name: 'Name',-->
-<!--              caption: 'Название'-->
-<!--            },-->
-<!--            {-->
-<!--              name: 'ViewUrl',-->
-<!--              caption: 'url'-->
-<!--            }-->
-<!--        ]" h="20rem"/>-->
-<!--      </div>-->
+      <h5> Действия </h5>
+      <div class="generation_page-api_info-buttons">
+        <button class="secondary-button" @click="createAction()" disabled>Добавить (в разработке)</button>
+        <button class="secondary-button" @click="infoListMode = (infoListMode + 1)%2">
+          {{infoListMode === 0 ? 'Список' : 'Код'}}
+        </button>
+      </div>
+      <div v-if="infoListMode === 0">
+        <label>Код для генерации</label>
+        <textarea style="width: 90vw; max-width: 90vw" v-model="code" @input="currentInfoName = ''"/>
+      </div>
+      <div v-else-if="infoListMode === 1">
+        <TheTable :data="infoArray" :columns="[
+            {
+              name: 'Name',
+              caption: 'Название'
+            },
+            {
+              name: 'ViewUrl',
+              caption: 'url'
+            }
+        ]" h="20rem"/>
+      </div>
       <button v-if="generatorMode === 1" @click="generateApi">Сгенерировать API</button>
       <button v-if="generatorMode === 2" disabled>Сгенерировать модель (в разработке)</button>
       <button v-if="generatorMode === 3" @click="generateRefbook">Сгенерировать справочники</button>
