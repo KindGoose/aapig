@@ -285,7 +285,7 @@ function getHeaders(apiInfo, method) {
 function getStringAxiosCall(apiInfo, func, method) {
     func.body += '      let request = window.axios.' + method + '(';
     if ('address' in apiInfo) {
-        if (apiInfo.address.startsWith('$' && apiInfo.address.endsWith('$'))) {
+        if (apiInfo.address.startsWith('$') && apiInfo.address.endsWith('$')) {
             func.body += apiInfo.address.slice(1,-1);
         } else {
             func.body += '"' + apiInfo.address + '"';

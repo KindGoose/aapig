@@ -18,15 +18,18 @@
     height: 90%;
     border-radius: 5px;
     border: solid 1px #1e1f22;
+    color: rgba(255, 255, 255, 0.95);
 }
 .generation_page-mode-buttons {
     display: flex;
     gap: 1rem;
+    color: white;
 }
 
 .secondary-button {
     background: black;
     transition: all 0.3s;
+    color: white;
 }
 .generation_page-text_area {
     width: 100%;

@@ -30,7 +30,7 @@
       </div>
       <div v-if="infoListMode === 0">
         <label>Код для генерации</label>
-        <textarea style="width: 90vw; max-width: 90vw" v-model="code" @input="currentInfoName = ''"/>
+        <textarea style="width: 90vw; max-width: 90vw; background: black; color: white;" v-model="code" @input="currentInfoName = ''"/>
       </div>
       <div v-else-if="infoListMode === 1">
         <TheTable :data="infoArray" :columns="[
@@ -51,11 +51,11 @@
     <div class="generation_page-row">
       <div class="generation_page-text_area">
         <label>Сгенерированный код</label>
-        <textarea style="width: 45vw; max-width: 45vw" v-model="generatedCode"/>
+        <textarea style="width: 45vw; max-width: 45vw; background: black; color: white;" v-model="generatedCode"/>
       </div>
       <div class="generation_page-text_area">
         <label>Отсортированная информация</label>
-        <textarea style="width: 45vw; max-width: 45vw" v-model="sortedInfo" />
+        <textarea style="width: 45vw; max-width: 45vw; background: black; color: white;" v-model="sortedInfo" />
       </div>
     </div>
 
