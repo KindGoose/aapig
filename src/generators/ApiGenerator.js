@@ -284,7 +284,13 @@ function getHeaders(apiInfo, method) {
  */
 function getStringAxiosCall(apiInfo, func, method) {
     func.body += '      let request = window.axios.' + method + '(';
-    if ('address' in apiInfo) func.body += '"' + apiInfo.address + '"';
+    if ('address' in apiInfo) {
+        if (apiInfo.address.startsWith('$' && apiInfo.address.endsWith('$'))) {
+            func.body += apiInfo.address.slice(1,-1);
+        } else {
+            func.body += '"' + apiInfo.address + '"';
+        }
+    }
     else func.body += 'baseAddress';
     func.body += ' + "' + apiInfo.url + '", ';
     const putParam = 'putParam' in apiInfo && apiInfo['putParam'] ? String(apiInfo.putParam) : 'Id';
